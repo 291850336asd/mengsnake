@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.snake.game.snake.gameengine.NormalGameEngine;
 import com.snake.game.snake.handler.HttpRequestHandler;
 import com.snake.game.snake.handler.SnakeGameHandler;
-import com.snake.game.snake.listener.SnakeGameListener;
-import com.snake.game.snake.model.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
@@ -15,15 +13,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 /**
@@ -74,12 +69,6 @@ public class SnakeGameServer implements InitializingBean {
             }
         });
     }
-
-
-
-
-
-
 
     @Override
     public void afterPropertiesSet() throws Exception {

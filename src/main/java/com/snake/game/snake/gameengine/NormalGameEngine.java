@@ -55,7 +55,7 @@ public class NormalGameEngine {
     }
 
     public NormalGameEngine(int mapWidth, int mapHeight,String uuid) {
-       this(mapWidth, mapHeight, 100, uuid);
+       this(mapWidth, mapHeight, 1000, uuid);
     }
 
     public NormalGameEngine(int mapWidth, int mapHeight, int refreshTime,String uuid) {
@@ -119,7 +119,6 @@ public class NormalGameEngine {
         if(listener != null){
             GameStatistic statistic = new GameStatistic();
             statistic.setLastVersion(currentVersion);
-            // TODO 在线人数需除去离线角色
             statistic.setOnlineCount(snakes.size());
             statistic.setRankingList(getRankingList());
             listener.statusChange(statistic);

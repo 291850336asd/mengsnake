@@ -30,7 +30,7 @@
 
 
 <script type="text/javascript"
-        src="./js/jquery.js"></script>
+        src="/snake/js/jquery.js"></script>
 <script type="text/javascript">
     // TODO 设置游戏状态
     // TODO 设置定时任务定时 检测版本
@@ -40,13 +40,13 @@
     var _top = 80;
     var index = 0;
 
-    var host = "localhost:8888";
+    var host = "192.168.112.69:8888";
     var accountName = "";
     var connectionState;//Connect,Disconnect
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
         websocket = new WebSocket("ws://" + host + "/ws");
-        accountName = prompt("请输入你的游戏名称:", "我的小可爱");
+        accountName = prompt("请输入你的游戏名称:", "snake");
     } else {
         alert("当前浏览器不支持 WebSocket!");
     }
@@ -54,6 +54,7 @@
 
     //连接发生错误的回调方法
     websocket.onerror = function () {
+        console.log("连接异常")
     };
 
     //连接成功建立的回调方法
@@ -247,7 +248,6 @@
      * @param data
      */
     function pushStatus(data) {
-        console.log("游戏状态信息变更：" + data);
         var statusHtml;
         var statistics = $.parseJSON(data);
         $("#online_count").text(statistics.onlineCount)

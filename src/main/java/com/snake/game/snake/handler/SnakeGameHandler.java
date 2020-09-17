@@ -1,6 +1,7 @@
 package com.snake.game.snake.handler;
 
 import com.alibaba.fastjson.JSON;
+import com.snake.game.snake.gameengine.EngineManger;
 import com.snake.game.snake.gameengine.NormalGameEngine;
 import com.snake.game.snake.listener.SnakeGameListener;
 import com.snake.game.snake.model.*;
@@ -26,8 +27,6 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
     static final Logger logger = LoggerFactory.getLogger(NormalGameEngine.class);
 
     private final ChannelGroup channels;
-    private ConcurrentHashMap<String, NormalGameEngine> groupEngine = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, String> gamerEngine = new ConcurrentHashMap<>();
 
     public SnakeGameHandler(ChannelGroup channels) {
         this.channels = channels;
@@ -46,13 +45,13 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
         String cmd = cmdText.substring(0, splitIndex);
         String cmdData = cmdText.substring(splitIndex + 1);
         if(cmd.equals("JOIN")){
-            if(!gamerEngine.containsKey(incoming.id().asLongText())){
-                if(groupEngine.size() == 0){
-                   crateNewEngine(incoming, cmdData);
+            if(!EngineManger.INSTANCE.gamerEngine.containsKey(incoming.id().asLongText())){
+                if(EngineManger.INSTANCE.groupEngine.size() == 0){
+                    crateNewEngine(incoming, cmdData);
                 } else {
-                    for (NormalGameEngine item: groupEngine.values()) {
-                        if(item.snakes.size() <3){
-                            gamerEngine.put(incoming.id().asLongText(),item.getUuid());
+                    for (NormalGameEngine item: EngineManger.INSTANCE.groupEngine.values()) {
+                        if(item.snakes.size() <30){
+                            EngineManger.INSTANCE.gamerEngine.put(incoming.id().asLongText(),item.getUuid());
                             item.newSnake(incoming.id().asLongText(), cmdData,incoming);
                             return;
                         }
@@ -62,9 +61,9 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
             }
            
         } else if(cmd.equals("CONTROL")){
-            groupEngine.get(gamerEngine.get(incoming.id().asLongText())).controlSnake(incoming.id().asLongText(), Integer.parseInt(cmdData));
+            EngineManger.INSTANCE.groupEngine.get(EngineManger.INSTANCE.gamerEngine.get(incoming.id().asLongText())).controlSnake(incoming.id().asLongText(), Integer.parseInt(cmdData));
         } else if(cmd.equals("FULL")){
-            String fullData = JSON.toJSONString(groupEngine.get(gamerEngine.get(incoming.id().asLongText())).getCurrentMapData(false));
+            String fullData = JSON.toJSONString(EngineManger.INSTANCE.groupEngine.get(EngineManger.INSTANCE.gamerEngine.get(incoming.id().asLongText())).getCurrentMapData(false));
             fullData = "version\r\n" + fullData;
             incoming.writeAndFlush(new TextWebSocketFrame(fullData));
         } else if(cmd.equals("QUANTITATIVE")){
@@ -73,20 +72,20 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
             for (int i = 0; i < vTexts.length; i++) {
                 versions[i] = Long.parseLong(vTexts[i]);
             }
-            for (VersionData s : groupEngine.get(gamerEngine.get(incoming.id().asLongText())).getVersion(versions)) {
+            for (VersionData s : EngineManger.INSTANCE.groupEngine.get(EngineManger.INSTANCE.gamerEngine.get(incoming.id().asLongText())).getVersion(versions)) {
                 incoming.writeAndFlush(new TextWebSocketFrame("version\r\n"+JSON.toJSONString(s)));
             }
         } else if(cmd.equals("RESURGENCE")){
             //复活
-            groupEngine.get(gamerEngine.get(incoming.id().asLongText())).doResurgence(incoming.id().asLongText());
+            EngineManger.INSTANCE.groupEngine.get(EngineManger.INSTANCE.gamerEngine.get(incoming.id().asLongText())).doResurgence(incoming.id().asLongText());
         }
     }
 
     private void crateNewEngine(Channel incoming, String cmdData) {
         String uuid = UUID.randomUUID().toString();
-        gamerEngine.put(incoming.id().asLongText(),uuid);
+        EngineManger.INSTANCE.gamerEngine.put(incoming.id().asLongText(),uuid);
         NormalGameEngine engine = new NormalGameEngine(uuid);
-        groupEngine.put(uuid, engine);
+        EngineManger.INSTANCE.groupEngine.put(uuid, engine);
         engine.newSnake(incoming.id().asLongText(), cmdData,incoming);
         startGame(engine);
     }
@@ -101,12 +100,18 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         logger.info("Client:" + incoming.remoteAddress() + "掉线");
+        String accountId = incoming.id().asLongText();
+        String engineUUId = EngineManger.INSTANCE.gamerEngine.get(accountId);
+        EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.remove(accountId);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         Channel incoming = ctx.channel();
         logger.error("Client:" + incoming.remoteAddress() + "异常", cause);
+        String accountId = incoming.id().asLongText();
+        String engineUUId = EngineManger.INSTANCE.gamerEngine.get(accountId);
+        EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.remove(accountId);
         ctx.close();
     }
 
@@ -120,6 +125,9 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
+        String accountId = incoming.id().asLongText();
+        String engineUUId = EngineManger.INSTANCE.gamerEngine.get(accountId);
+        EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.remove(accountId);
         logger.info("Client:" + incoming.remoteAddress() + "离开");
     }
 
@@ -190,7 +198,7 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
         String str = JSON.toJSONString(data);
         String prefix = "version\r\n";
         String[] cmds, cmdDatas;
-        for(Channel channel : channels){
+        for(Channel channel : gameEngine.snakes.values().stream().map(item -> item.getChannel()).collect(Collectors.toList())){
             DrawingCommand cmd = gameEngine.getDrawingCommand(channel.id().asLongText());
             if(cmd != null){
                 // 基于当前角色通道的 特殊作画指令

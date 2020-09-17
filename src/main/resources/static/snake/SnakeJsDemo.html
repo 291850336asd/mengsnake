@@ -33,8 +33,8 @@
     <button class="btn" id="begin">开始游戏</button>
     <div class="map" id="map"></div>
     <script type="text/javascript">
-        var mp3UrlBg = ["./video/bg.mp3","./video/bg_little.mp3"];
-        var mp3UrlEat = ["./video/eat.mp3","./video/eat2.mp3"];
+        var mp3UrlBg = ["/snake/video/bg.mp3","/snake/video/bg_little.mp3"];
+        var mp3UrlEat = ["/snake/video/eat.mp3","/snake/video/eat2.mp3"];
         var mp3PlayBg = new Audio(mp3UrlBg[Math.ceil(Math.random()*10)% 2]);
         var mp3PlayEat = new Audio(mp3UrlEat[Math.ceil(Math.random()*10)% 2]);
         var map = document.getElementById('map');
