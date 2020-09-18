@@ -13,10 +13,10 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -102,7 +102,9 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
         logger.info("Client:" + incoming.remoteAddress() + "掉线");
         String accountId = incoming.id().asLongText();
         String engineUUId = EngineManger.INSTANCE.gamerEngine.get(accountId);
-        EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.remove(accountId);
+        if(!StringUtils.isEmpty(engineUUId)){
+            EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.get(accountId).dying();
+        }
     }
 
     @Override
@@ -111,7 +113,9 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
         logger.error("Client:" + incoming.remoteAddress() + "异常", cause);
         String accountId = incoming.id().asLongText();
         String engineUUId = EngineManger.INSTANCE.gamerEngine.get(accountId);
-        EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.remove(accountId);
+        if(!StringUtils.isEmpty(engineUUId)){
+            EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.get(accountId).dying();
+        }
         ctx.close();
     }
 
@@ -127,7 +131,9 @@ public class SnakeGameHandler extends SimpleChannelInboundHandler<TextWebSocketF
         Channel incoming = ctx.channel();
         String accountId = incoming.id().asLongText();
         String engineUUId = EngineManger.INSTANCE.gamerEngine.get(accountId);
-        EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.remove(accountId);
+        if(!StringUtils.isEmpty(engineUUId)){
+            EngineManger.INSTANCE.groupEngine.get(engineUUId).snakes.get(accountId).dying();
+        }
         logger.info("Client:" + incoming.remoteAddress() + "离开");
     }
 

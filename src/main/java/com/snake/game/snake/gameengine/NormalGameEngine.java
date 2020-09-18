@@ -55,7 +55,7 @@ public class NormalGameEngine {
     }
 
     public NormalGameEngine(int mapWidth, int mapHeight,String uuid) {
-       this(mapWidth, mapHeight, 1000, uuid);
+       this(mapWidth, mapHeight, 200, uuid);
     }
 
     public NormalGameEngine(int mapWidth, int mapHeight, int refreshTime,String uuid) {
@@ -604,5 +604,9 @@ public class NormalGameEngine {
             return null;
         }
         return snakes.get(accountId);
+    }
+
+    public void snakeOffLine(){
+
     }
 }

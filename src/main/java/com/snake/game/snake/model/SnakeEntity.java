@@ -61,7 +61,7 @@ public class SnakeEntity {
     }
 
     public void setDirection(SnakeDirection direction){
-        for(SnakeDirection oldDirection: new SnakeDirection[]{this.direction, lastChangeDirection}){
+        for(SnakeDirection oldDirection: new SnakeDirection[]{lastChangeDirection}){
             //无效指令验证
             if(oldDirection == UP && direction == DOWN){
                 return;
@@ -75,9 +75,10 @@ public class SnakeEntity {
             if (oldDirection == SnakeDirection.RIGHT && direction == LEFT){
                 return;
             }
-            logger.debug("改变snake 移动方向 ID:{}, 当前方向：{}", accountId, direction.toString());
-            this.direction = direction;
         }
+        System.out.println(this.direction +  "  " + lastChangeDirection);
+        logger.debug("改变snake 移动方向 ID:{}, 当前方向：{}", accountId, direction.toString());
+        this.direction = direction;
     }
 
     /**
