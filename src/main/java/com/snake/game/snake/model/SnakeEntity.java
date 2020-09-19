@@ -12,7 +12,6 @@ import static com.snake.game.snake.model.SnakeDirection.*;
 
 public class SnakeEntity {
     static final Logger logger = LoggerFactory.getLogger(SnakeEntity.class);
-
     private int startPoint;
     private int initBodyCount;
     private final NormalGameEngine engine;
@@ -76,7 +75,6 @@ public class SnakeEntity {
                 return;
             }
         }
-        System.out.println(this.direction +  "  " + lastChangeDirection);
         logger.debug("改变snake 移动方向 ID:{}, 当前方向：{}", accountId, direction.toString());
         this.direction = direction;
     }

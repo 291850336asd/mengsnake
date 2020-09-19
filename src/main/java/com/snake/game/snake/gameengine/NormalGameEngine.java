@@ -55,7 +55,7 @@ public class NormalGameEngine {
     }
 
     public NormalGameEngine(int mapWidth, int mapHeight,String uuid) {
-       this(mapWidth, mapHeight, 200, uuid);
+       this(mapWidth, mapHeight, 500, uuid);
     }
 
     public NormalGameEngine(int mapWidth, int mapHeight, int refreshTime,String uuid) {
@@ -559,17 +559,17 @@ public class NormalGameEngine {
         // 去掉前缀 中的逗号
         if(body.length() > 0){
             body.deleteCharAt(0);
-            cmd.add("Green");
+            cmd.add("Black");
             cmdDatas.add(body.toString());
         }
         if (food.length() > 0) {
             food.deleteCharAt(0);
-            cmd.add("Yellow");
+            cmd.add("Red");
             cmdDatas.add(food.toString());
         }
         if (remove.length() > 0) {
             remove.deleteCharAt(0);
-            cmd.add("Black");
+            cmd.add("#ccc");
             cmdDatas.add(remove.toString());
         }
         VersionData vd = new VersionData(version, System.currentTimeMillis());

@@ -6,10 +6,11 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="600" height="600" style="background: Black"></canvas>
+<canvas id="myCanvas" width="600" height="600" style="background: #ccc"></canvas>
 <div style="position: fixed;top:0px;left: 610px; width: 350px;height: 600px;">
     <ul>
         <li>
+            <button class="btn" id="music">背景音乐</button>
             <ul id="status_list">
                 <li>在线人数：<span id="online_count" style="color: #2f3bff">0</span></li>
                 <li>你当前 击杀：<span id="current_killer" style="color: #FF0000">空</span>
@@ -278,8 +279,29 @@
         }
     }
 
+    var music = document.getElementById('music');
+    var mp3UrlBg = ["/snake/video/bg.mp3","/snake/video/bg_little.mp3"];
+    var mp3PlayBg = new Audio(mp3UrlBg[Math.ceil(Math.random()*10)% 2]);
+    var isPlay = false;
+    music.onclick = function() {
+       if(isPlay){
+           bgVideoPause()
+       } else {
+           bgVideoPlay();
+       }
+    };
+    function bgVideoPlay() {
+        mp3PlayBg.autoplay = true;
+        mp3PlayBg.loop = true;
+        mp3PlayBg.play();
+        isPlay = true;
+    }
 
-    //refresh("Lime,0,0,1,1,2,2\r\nYellow,4,4,5,5");
+    function bgVideoPause() {
+        mp3PlayBg.pause();
+        isPlay = false;
+    }
+    bgVideoPlay();
 </script>
 </body>
 </html>
