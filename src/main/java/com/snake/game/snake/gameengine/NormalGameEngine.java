@@ -408,7 +408,7 @@ public class NormalGameEngine {
         }
         if (food.length() > 0) {
             food.deleteCharAt(0);
-            cmds.add("Yellow");
+            cmds.add("white");
             cmdsDatas.add(food.toString());
         }
         VersionData vd = new VersionData(currentVersion, System.currentTimeMillis());
@@ -559,18 +559,18 @@ public class NormalGameEngine {
         // 去掉前缀 中的逗号
         if(body.length() > 0){
             body.deleteCharAt(0);
-            cmd.add("Black");
+            cmd.add("Green");
             cmdDatas.add(body.toString());
-        }
-        if (food.length() > 0) {
-            food.deleteCharAt(0);
-            cmd.add("Red");
-            cmdDatas.add(food.toString());
         }
         if (remove.length() > 0) {
             remove.deleteCharAt(0);
-            cmd.add("#ccc");
+            cmd.add("Black");
             cmdDatas.add(remove.toString());
+        }
+        if (food.length() > 0) {
+            food.deleteCharAt(0);
+            cmd.add("white");
+            cmdDatas.add(food.toString());
         }
         VersionData vd = new VersionData(version, System.currentTimeMillis());
         vd.setCmds(cmd.toArray(new String[cmd.size()]));
